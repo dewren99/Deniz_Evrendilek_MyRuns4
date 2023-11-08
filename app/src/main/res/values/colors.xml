@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+
+    <!--https://android.googlesource.com/platform/frameworks/base/+/master/core/res/res/values/colors.xml-->
+
+    <!--https://colorhunt.co/palette/fff8ea9e7676815b5b594545-->
+    <color name="palette_1">#594545</color>
+    <color name="palette_2">#815B5B</color>
+    <color name="palette_3">#9E7676</color>
+    <color name="palette_4">#FFF8EA</color>
+    <color name="palette_5">#FFF8EA</color>
+</resources>

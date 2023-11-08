@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.fragments.navigations.DisplayEntryFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="15dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:labelFor="@id/display_exercise_entry_input_type"
+            android:text="@string/exercise_entry_display_label_input_type"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/display_exercise_entry_input_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:labelFor="@id/display_exercise_entry_exercise_type"
+            android:text="@string/exercise_entry_display_label_exercise_type"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/display_exercise_entry_exercise_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:labelFor="@id/display_exercise_entry_date_time"
+            android:text="@string/exercise_entry_display_label_date_and_time"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/display_exercise_entry_date_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:labelFor="@id/display_exercise_entry_duration"
+            android:text="@string/exercise_entry_display_label_duration"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/display_exercise_entry_duration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:labelFor="@id/display_exercise_entry_distance"
+            android:text="@string/exercise_entry_display_label_distance"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/display_exercise_entry_distance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:labelFor="@id/display_exercise_entry_calories"
+            android:text="@string/exercise_entry_display_label_calories"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/display_exercise_entry_calories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:labelFor="@id/display_exercise_entry_heart_rate"
+            android:text="@string/exercise_entry_display_label_heart_rate"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/display_exercise_entry_heart_rate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+
+</ScrollView>

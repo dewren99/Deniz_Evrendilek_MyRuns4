@@ -1,0 +1,9 @@
+<resources>
+    <!-- Reply Preference -->
+    <string-array name="unit_preference">
+        <item>Metric (Kilometers)</item>
+        <item>Imperial (Miles)</item>
+    </string-array>
+
+
+</resources>

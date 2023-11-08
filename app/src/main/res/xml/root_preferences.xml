@@ -1,0 +1,65 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:divider="@color/black">
+
+    <PreferenceCategory
+        app:allowDividerBelow="false"
+        app:iconSpaceReserved="false"
+        app:title="Account Preferences">
+
+        <Preference
+            android:key="profile"
+            app:allowDividerBelow="true"
+            app:iconSpaceReserved="false"
+            app:summary="Your Profile"
+            app:title="Name, Email, Class, etc" />
+
+        <CheckBoxPreference
+            android:key="privacy"
+            app:allowDividerAbove="true"
+            app:allowDividerBelow="false"
+            app:iconSpaceReserved="false"
+            app:summary="Posting your records anonymously"
+            app:title="Privacy Setting" />
+
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:allowDividerBelow="false"
+        app:iconSpaceReserved="false"
+        app:title="Additional Settings">
+
+        <ListPreference
+            android:entries="@array/unit_preference"
+            android:entryValues="@array/unit_preference"
+            android:key="unit_preference"
+            app:iconSpaceReserved="false"
+            app:summary="Select the units"
+            app:title="Unit Preference" />
+
+        <EditTextPreference
+            android:key="comments"
+            app:allowDividerAbove="true"
+            app:allowDividerBelow="true"
+            app:iconSpaceReserved="false"
+            app:summary="Please enter your comments"
+            app:title="Comments" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="true"
+        app:iconSpaceReserved="false"
+        app:title="Misc.">
+        <Preference
+            android:key="webpage"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="true"
+            app:iconSpaceReserved="false"
+            app:summary="https://www.sfu.ca/computing.html"
+            app:title="Webpage" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
