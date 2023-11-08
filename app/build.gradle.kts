@@ -4,6 +4,8 @@ plugins {
 
     // Database setup
     id("com.google.devtools.ksp") version "1.9.10-1.0.13"
+    // Google Maps API Key Setup
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -19,7 +21,9 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
+    buildFeatures {
+        buildConfig = true
+    }
     buildTypes {
         release {
             isMinifyEnabled = false

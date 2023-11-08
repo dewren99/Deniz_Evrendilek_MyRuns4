@@ -18,6 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Deniz_Evrendilek_MyRuns4"
         tools:targetApi="33">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${GOOGLE_MAPS_API_KEY}" />
         <activity
             android:name=".ui.activities.MainActivity"
             android:exported="true">
