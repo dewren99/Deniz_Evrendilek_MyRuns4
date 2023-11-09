@@ -21,6 +21,10 @@ import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.deniz_evrendilek_myruns4.R
+import com.example.deniz_evrendilek_myruns4.constants.PermissionRequestCodes.PERMISSION_IMAGE_CAPTURE
+import com.example.deniz_evrendilek_myruns4.constants.PermissionRequestCodes.PERMISSION_PICK
+import com.example.deniz_evrendilek_myruns4.constants.PermissionRequestCodes.PERMISSION_READ_STORAGE
+import com.example.deniz_evrendilek_myruns4.constants.PermissionRequestCodes.PERMISSION_WRITE_STORAGE
 import com.example.deniz_evrendilek_myruns4.data.model.ProfileDataForm
 import com.example.deniz_evrendilek_myruns4.managers.PermissionsManager
 import com.example.deniz_evrendilek_myruns4.managers.ToastManager
@@ -161,7 +165,7 @@ class ProfileFragment : Fragment(), AlertDialogOnClickListener {
     private fun maybeRequestCameraPermission() {
         if (!permissionsManager.hasCameraPermission()) {
             permissionsManager.requestPermission(
-                android.Manifest.permission.CAMERA, PermissionsManager.PERMISSION_IMAGE_CAPTURE
+                android.Manifest.permission.CAMERA, PERMISSION_IMAGE_CAPTURE
             )
         }
     }
@@ -171,7 +175,7 @@ class ProfileFragment : Fragment(), AlertDialogOnClickListener {
         if (!permissionsManager.hasReadStoragePermission()) {
             permissionsManager.requestPermission(
                 android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                PermissionsManager.PERMISSION_READ_STORAGE
+                PERMISSION_READ_STORAGE
             )
         }
     }
@@ -181,7 +185,7 @@ class ProfileFragment : Fragment(), AlertDialogOnClickListener {
         if (!permissionsManager.hasWriteStoragePermission()) {
             permissionsManager.requestPermission(
                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                PermissionsManager.PERMISSION_WRITE_STORAGE
+                PERMISSION_WRITE_STORAGE
             )
         }
     }
@@ -242,14 +246,14 @@ class ProfileFragment : Fragment(), AlertDialogOnClickListener {
     private fun handleSelectImageWithCamera() {
         val cameraIntent = Intent(ACTION_IMAGE_CAPTURE)
         @Suppress("DEPRECATION") startActivityForResult(
-            cameraIntent, PermissionsManager.PERMISSION_IMAGE_CAPTURE
+            cameraIntent, PERMISSION_IMAGE_CAPTURE
         )
     }
 
     private fun handleSelectImageFromGallery() {
         val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
         @Suppress("DEPRECATION") startActivityForResult(
-            galleryIntent, PermissionsManager.PERMISSION_PICK
+            galleryIntent, PERMISSION_PICK
         )
     }
 
@@ -311,8 +315,8 @@ class ProfileFragment : Fragment(), AlertDialogOnClickListener {
             requestCode,
             resultCode,
             data,
-            mapOf(PermissionsManager.PERMISSION_IMAGE_CAPTURE to { onImageCapture(it) },
-                PermissionsManager.PERMISSION_PICK to { onPermissionPick() })
+            mapOf(PERMISSION_IMAGE_CAPTURE to { onImageCapture(it) },
+                PERMISSION_PICK to { onPermissionPick() })
         )
     }
 
@@ -331,7 +335,7 @@ class ProfileFragment : Fragment(), AlertDialogOnClickListener {
         )
         fun onPermissionGranted(requestCode: Int) {
             when (requestCode) {
-                PermissionsManager.PERMISSION_IMAGE_CAPTURE -> handleSelectImageWithCamera()
+                PERMISSION_IMAGE_CAPTURE -> handleSelectImageWithCamera()
             }
         }
         permissionsManager.onRequestPermissionsResult(requestCode,

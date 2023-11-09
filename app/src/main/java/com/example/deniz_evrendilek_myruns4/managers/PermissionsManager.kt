@@ -7,12 +7,6 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 
 class PermissionsManager(private val fragment: Fragment) {
-    companion object {
-        const val PERMISSION_IMAGE_CAPTURE = 1001
-        const val PERMISSION_READ_STORAGE = 1002
-        const val PERMISSION_WRITE_STORAGE = 1003
-        const val PERMISSION_PICK = 1004
-    }
 
     private fun hasPermission(permission: String): Boolean {
         return ActivityCompat.checkSelfPermission(
