@@ -47,7 +47,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         Intent(requireActivity().applicationContext, TrackingService::class.java).apply {
-            action = TrackingService.START_TRACKING
+            action = TrackingService.START
             requireActivity().startService(this)
         }
 
@@ -104,7 +104,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun onExit() {
         restoreToolbarHeader()
         Intent(requireActivity().applicationContext, TrackingService::class.java).apply {
-            action = TrackingService.STOP_TRACKING
+            action = TrackingService.STOP
             requireActivity().startService(this)
         }
     }
