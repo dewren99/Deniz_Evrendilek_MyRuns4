@@ -67,11 +67,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun onCoordinatesUpdated(updatedCoordinates: MutableList<Location>) {
-        println(
-            "Coordinate update: (${updatedCoordinates.last().latitude},${
-                updatedCoordinates.last().longitude
-            })"
-        )
+        if (updatedCoordinates.isNotEmpty()) {
+            println(
+                "Coordinate update: (${updatedCoordinates.last().latitude},${
+                    updatedCoordinates.last().longitude
+                })"
+            )
+        }
+
         coordinates = updatedCoordinates
     }
 

@@ -31,10 +31,14 @@ class TrackingService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        initLocationProvider()
+        initTrackedCoordinates()
+    }
+
+    private fun initLocationProvider() {
         val fusedLocationProvider =
             LocationServices.getFusedLocationProviderClient(applicationContext)
         locationTrackingManager = LocationTrackingManager(applicationContext, fusedLocationProvider)
-        trackedCoordinates.value = mutableListOf()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -59,10 +63,6 @@ class TrackingService : Service() {
         notification.setContentTitle("MyRuns").setContentText("Recording your path now")
             .setSmallIcon(R.drawable.el_gato_drawable).setOngoing(true).setAutoCancel(false)
 
-//        val notificationManager =
-//            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-//        notificationManager.notify(FOREGROUND_ID, notification.build())
-
         startForeground(FOREGROUND_ID, notification.build())
     }
 
@@ -72,9 +72,7 @@ class TrackingService : Service() {
             return
         }
         val channel = NotificationChannel(
-            NOTIFICATION_CHANNEL_ID,
-            NOTIFICATION_CHANNEL_NAME,
-            NOTIFICATION_IMPORTANCE
+            NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_NAME, NOTIFICATION_IMPORTANCE
         )
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -89,7 +87,7 @@ class TrackingService : Service() {
     }
 
     private fun onLocationUpdate(location: Location) {
-        trackedCoordinates.value?.add(location)
+        addToTrackedCoordinates(location)
         println("${location.latitude},${location.longitude}")
     }
 
@@ -113,5 +111,15 @@ class TrackingService : Service() {
         const val STOP = "STOP_TRACKING_SERVICE"
 
         val trackedCoordinates = MutableLiveData<MutableList<Location>>()
+        private fun initTrackedCoordinates() {
+            trackedCoordinates.postValue(mutableListOf())
+        }
+
+        private fun addToTrackedCoordinates(location: Location) {
+            val coordinates = trackedCoordinates.value ?: return
+
+            coordinates.add(location)
+            trackedCoordinates.postValue(coordinates)
+        }
     }
 }
