@@ -34,6 +34,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var mapFragment: SupportMapFragment
     private lateinit var googleMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var coordinates = mutableListOf<Location>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -46,12 +47,32 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         setupMap()
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
+        startTrackingService()
+
+        return view
+    }
+
+    private fun startTrackingService() {
         Intent(requireActivity().applicationContext, TrackingService::class.java).apply {
             action = TrackingService.START
             requireActivity().startService(this)
         }
+        subscribeToTrackingService()
+    }
 
-        return view
+    private fun subscribeToTrackingService() {
+        TrackingService.trackedCoordinates.observe(viewLifecycleOwner) {
+            onCoordinatesUpdated(it)
+        }
+    }
+
+    private fun onCoordinatesUpdated(updatedCoordinates: MutableList<Location>) {
+        println(
+            "Coordinate update: (${updatedCoordinates.last().latitude},${
+                updatedCoordinates.last().longitude
+            })"
+        )
+        coordinates = updatedCoordinates
     }
 
     private fun setupMap() {

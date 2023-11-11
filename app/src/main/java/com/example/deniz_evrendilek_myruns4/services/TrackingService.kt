@@ -1,10 +1,15 @@
 package com.example.deniz_evrendilek_myruns4.services
 
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
+import android.content.Context
 import android.content.Intent
+import android.location.Location
+import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import androidx.lifecycle.MutableLiveData
 import com.example.deniz_evrendilek_myruns4.R
 import com.example.deniz_evrendilek_myruns4.managers.LocationTrackingManager
 import com.google.android.gms.location.LocationServices
@@ -29,6 +34,7 @@ class TrackingService : Service() {
         val fusedLocationProvider =
             LocationServices.getFusedLocationProviderClient(applicationContext)
         locationTrackingManager = LocationTrackingManager(applicationContext, fusedLocationProvider)
+        trackedCoordinates.value = mutableListOf()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -43,8 +49,9 @@ class TrackingService : Service() {
     }
 
     private fun start() {
-        setupNotification()
         setupLocationListener()
+        setupNotificationChannel()
+        setupNotification()
     }
 
     private fun setupNotification() {
@@ -59,11 +66,31 @@ class TrackingService : Service() {
         startForeground(FOREGROUND_ID, notification.build())
     }
 
+    private fun setupNotificationChannel() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            println("Cannot create Notification Channel, Android SDK is too old")
+            return
+        }
+        val channel = NotificationChannel(
+            NOTIFICATION_CHANNEL_ID,
+            NOTIFICATION_CHANNEL_NAME,
+            NOTIFICATION_IMPORTANCE
+        )
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
+    }
+
     private fun setupLocationListener() {
         locationTrackingManager.subscribe(LOCATION_POLL_INTERVAL).catch { it.printStackTrace() }
             .onEach {
-                println("${it.latitude},${it.longitude}")
+                onLocationUpdate(it)
             }.launchIn(scope)
+    }
+
+    private fun onLocationUpdate(location: Location) {
+        trackedCoordinates.value?.add(location)
+        println("${location.latitude},${location.longitude}")
     }
 
     private fun stop() {
@@ -84,5 +111,7 @@ class TrackingService : Service() {
         private const val FOREGROUND_ID = 1
         const val START = "START_TRACKING_SERVICE"
         const val STOP = "STOP_TRACKING_SERVICE"
+
+        val trackedCoordinates = MutableLiveData<MutableList<Location>>()
     }
 }
