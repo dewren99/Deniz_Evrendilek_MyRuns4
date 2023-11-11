@@ -8,11 +8,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.deniz_evrendilek_myruns4.R
 import com.example.deniz_evrendilek_myruns4.services.TrackingService
+import com.example.deniz_evrendilek_myruns4.ui.viewmodel.StartFragmentViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -34,12 +37,25 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var coordinates = mutableListOf<Location>()
     private var markerInitialLocation: Marker? = null
     private var markerCurrentLocation: Marker? = null
+    private lateinit var startFragmentViewModel: StartFragmentViewModel
+    private var exerciseType: String? = null
+    private var inputType: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_map, container, false)
+
+        startFragmentViewModel =
+            ViewModelProvider(requireActivity())[StartFragmentViewModel::class.java]
+        startFragmentViewModel.inputAndActivityType.observe(viewLifecycleOwner) {
+            inputType = it.first
+
+            if (inputType == "GPS") {
+                exerciseType = it.second
+            }
+        }
 
         setToolbarHeader()
         setupButtons()
@@ -72,6 +88,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
         coordinates = updatedCoordinates
         drawTravelPath()
+        setStatTexts()
     }
 
     private fun setupMap() {
@@ -156,6 +173,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val latLng = markerCurrentLocation?.position ?: return
         val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15f)
         googleMap.animateCamera(cameraUpdate)
+    }
+
+    private fun setStatTexts() {
+        val type = exerciseType ?: "Unknown"
+        view.findViewById<TextView>(R.id.map_exercise_type).text = "Type: $type"
+        view.findViewById<TextView>(R.id.map_exercise_avg_speed).text = "Avg speed: "
+        view.findViewById<TextView>(R.id.map_exercise_curr_speed).text = "Curr speed: "
+        view.findViewById<TextView>(R.id.map_exercise_climb).text = "Climb: "
+        view.findViewById<TextView>(R.id.map_exercise_calories).text = "Calories: "
+        view.findViewById<TextView>(R.id.map_exercise_distance).text = "Distance: "
     }
 
 

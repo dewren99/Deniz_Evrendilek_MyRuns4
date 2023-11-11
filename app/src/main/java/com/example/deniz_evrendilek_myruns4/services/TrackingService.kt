@@ -111,6 +111,7 @@ class TrackingService : Service() {
         const val START = "START_TRACKING_SERVICE"
         const val STOP = "STOP_TRACKING_SERVICE"
 
+        // TODO: Convert toExerciseEntry Data
         val trackedCoordinates = MutableLiveData<MutableList<Location>>()
         private fun initTrackedCoordinates() {
             trackedCoordinates.postValue(mutableListOf())
