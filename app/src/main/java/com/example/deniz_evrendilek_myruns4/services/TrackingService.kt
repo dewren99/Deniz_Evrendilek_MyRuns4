@@ -26,6 +26,7 @@ class TrackingService : Service() {
     private lateinit var locationTrackingManager: LocationTrackingManager
 
     override fun onBind(intent: Intent?): IBinder? {
+        // TODO: onBind vs onStartCommand, look at starting notification here
         return null
     }
 
@@ -88,7 +89,7 @@ class TrackingService : Service() {
 
     private fun onLocationUpdate(location: Location) {
         addToTrackedCoordinates(location)
-        println("${location.latitude},${location.longitude}")
+        println("Tracking Service: ${location.latitude},${location.longitude}")
     }
 
     private fun stop() {
@@ -102,7 +103,7 @@ class TrackingService : Service() {
     }
 
     companion object {
-        private const val LOCATION_POLL_INTERVAL = 5000L
+        private const val LOCATION_POLL_INTERVAL = 1000L
         const val NOTIFICATION_IMPORTANCE = NotificationManager.IMPORTANCE_LOW
         const val NOTIFICATION_CHANNEL_ID = "MyRuns Tracking Service"
         const val NOTIFICATION_CHANNEL_NAME = "MyRuns Tracking Service"
