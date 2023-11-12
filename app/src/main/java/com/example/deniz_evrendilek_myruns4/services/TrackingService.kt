@@ -38,6 +38,7 @@ class TrackingService : Service() {
     override fun onCreate() {
         super.onCreate()
         initLocationProvider()
+        resetTrackedExerciseEntry()
     }
 
     private fun initLocationProvider() {
@@ -56,7 +57,7 @@ class TrackingService : Service() {
 
             STOP -> stop()
             else -> throw IllegalStateException(
-                "Unsupported intent?.action, please pass " + "START_TRACKING or STOP_TRACKING"
+                "Unsupported intent?.action ${intent?.action}, please pass " + "START or STOP"
             )
         }
         return super.onStartCommand(intent, flags, startId)
@@ -102,6 +103,7 @@ class TrackingService : Service() {
     }
 
     private fun stop() {
+        resetTrackedExerciseEntry()
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
@@ -110,21 +112,6 @@ class TrackingService : Service() {
         super.onDestroy()
         scope.cancel()
     }
-
-//    private fun initExerciseEntryTrackingData() {
-//        if (inputType == null) {
-//            return
-//        }
-//        val inputTypeId = InputTypes.getId(inputType!!) ?: return
-//        val exerciseTypeId = ExerciseTypes.getId(exerciseType)
-//
-//        val trackingExerciseEntry = TrackingExerciseEntry(
-//            inputType = inputTypeId,
-//            activityType = exerciseTypeId,
-//            dateTime = Calendar.getInstance(),
-//            locationList = trackedCoordinates.value ?: listOf()
-//        )
-//    }
 
     companion object {
         private const val LOCATION_POLL_INTERVAL = 1000L
@@ -135,9 +122,11 @@ class TrackingService : Service() {
         const val START = "START_TRACKING_SERVICE"
         const val STOP = "STOP_TRACKING_SERVICE"
 
-        // TODO: Convert toExerciseEntry Data
-        val trackedExerciseEntry =
-            MutableLiveData(TrackingExerciseEntry.emptyTrackingExerciseEntry())
+        val trackedExerciseEntry = MutableLiveData<TrackingExerciseEntry>()
+
+        private fun resetTrackedExerciseEntry() {
+            trackedExerciseEntry.postValue(TrackingExerciseEntry.emptyTrackingExerciseEntry())
+        }
 
         private fun addToTrackedExerciseData(
             inputType: Int, exerciseType: Int, location:

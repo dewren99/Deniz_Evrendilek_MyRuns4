@@ -11,10 +11,19 @@ data class TrackingExerciseEntry(
     val activityType: Int,
     val dateTime: Calendar,
     val duration: Double,
+    /**
+     * distance is in meters
+     */
     val distance: Double,
     val avgPace: Double,
+    /**
+     * avgSpeed in meter per second
+     */
     val avgSpeed: Double,
     val calorie: Double,
+    /**
+     * climb in meters
+     */
     val climb: Double,
     val heartRate: Double,
     val comment: String,
@@ -41,13 +50,16 @@ data class TrackingExerciseEntry(
         locationList = locationList
     )
 
-    fun getCurrentSpeed(): String {
-        val na = "n/a"
+    fun getCurrentSpeed(): Double? {
         if (locationList.isEmpty()) {
-            return na
+            return null
         }
         val last = locationList.last()
-        return if (last.hasSpeed()) "${last.speed}m/s" else na
+        if (!last.hasSpeed()) {
+            return null
+        }
+        val speed = last.speed.toDouble()
+        return speed
     }
 
     fun toExerciseEntry(): ExerciseEntry {
@@ -81,6 +93,9 @@ data class TrackingExerciseEntry(
             )
         }
 
+        /**
+         * Speed in meter per second
+         */
         fun getAvgSpeed(locationList: List<Location>): Double {
             if (locationList.size < 2) {
                 return 0.0
@@ -97,7 +112,8 @@ data class TrackingExerciseEntry(
             if (totalTimeHours <= 0) {
                 return 0.0
             }
-            return totalDistance / totalTimeHours
+            val speed = (totalDistance / totalTimeHours)
+            return speed
         }
 
         fun getAvgPace(locationList: List<Location>): Double {
@@ -110,9 +126,13 @@ data class TrackingExerciseEntry(
             if (totalTimeHours <= 0) {
                 return 0.0
             }
-            return totalTimeHours / (totalDistance / 1000.0) // 1609.34 for mile
+            val pace = totalTimeHours / (totalDistance / 1000.0) // 1609.34 for mile
+            return pace
         }
 
+        /**
+         * Duration in seconds
+         */
         fun getTotalDuration(locationList: List<Location>): Double {
             if (locationList.size < 2) {
                 return 0.0
@@ -123,6 +143,9 @@ data class TrackingExerciseEntry(
             return (endTime - startTime) / 1000.0 // in seconds
         }
 
+        /**
+         * Distance in meters
+         */
         fun getTotalDistance(locationList: List<Location>): Double {
             if (locationList.size < 2) {
                 return 0.0
@@ -134,20 +157,36 @@ data class TrackingExerciseEntry(
          * https://blog.nasm.org/metabolic-equivalents-for-weight-loss
          */
         fun getCaloriesBurnt(locationList: List<Location>): Double {
-            val metConst = 3.0
+            var currentSpeed = 5.0
+            if (locationList.isNotEmpty()) {
+                currentSpeed = locationList.last().speed.toDouble()
+            }
+            val metConst = when {
+                currentSpeed < 2.0 -> 2.0
+                currentSpeed < 5.0 -> 3.0
+                currentSpeed < 8.0 -> 6.0
+                else -> 8.0  // Running fast
+            }
             val avgHumanWeightKgCanada = 77.0
             val calPerMin = (metConst * avgHumanWeightKgCanada * 3.5) / 200.0
-            return calPerMin * (getTotalDuration(locationList) * 60.0)
+            val mins = getTotalDuration(locationList) / 60.0
+            val calories = calPerMin * mins
+            return calories
+
         }
 
+        /**
+         * Altitude in meters
+         */
         fun getTotalClimb(locationList: List<Location>): Double {
             if (locationList.size < 2) {
                 return 0.0
             }
 
-            return locationList.zipWithNext { a, b ->
+            val climb = locationList.zipWithNext { a, b ->
                 (b.altitude - a.altitude).takeIf { it > 0.0 } ?: 0.0
             }.sum() // in meters
+            return climb
         }
 
         fun locationToLatLngList(locationList: List<Location>): ArrayList<LatLng> {
