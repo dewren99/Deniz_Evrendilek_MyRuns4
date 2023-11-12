@@ -2,7 +2,6 @@ package com.example.deniz_evrendilek_myruns4.ui.fragments.navigations
 
 import android.content.Intent
 import android.graphics.Color
-import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +13,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.deniz_evrendilek_myruns4.R
+import com.example.deniz_evrendilek_myruns4.constants.ExerciseTypes
+import com.example.deniz_evrendilek_myruns4.constants.InputTypes
+import com.example.deniz_evrendilek_myruns4.data.model.TrackingExerciseEntry
 import com.example.deniz_evrendilek_myruns4.services.TrackingService
 import com.example.deniz_evrendilek_myruns4.ui.viewmodel.StartFragmentViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -34,7 +36,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var buttonSave: Button
     private lateinit var mapFragment: SupportMapFragment
     private lateinit var googleMap: GoogleMap
-    private var coordinates = mutableListOf<Location>()
+    private var trackingExerciseEntry = TrackingExerciseEntry.emptyTrackingExerciseEntry()
     private var markerInitialLocation: Marker? = null
     private var markerCurrentLocation: Marker? = null
     private lateinit var startFragmentViewModel: StartFragmentViewModel
@@ -65,7 +67,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun startTrackingService() {
+        if (inputType == null) {
+            return
+        }
+        val inputTypeId = InputTypes.getId(inputType!!)
+        val exerciseTypeId = ExerciseTypes.getId(exerciseType)
         Intent(requireActivity().applicationContext, TrackingService::class.java).apply {
+            putExtra("INPUT_TYPE_ID", inputTypeId)
+            putExtra("EXERCISE_TYPE_ID", exerciseTypeId)
             action = TrackingService.START
             requireActivity().startService(this)
         }
@@ -73,20 +82,20 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun subscribeToTrackingService() {
-        TrackingService.trackedCoordinates.observe(viewLifecycleOwner) {
+        TrackingService.trackedExerciseEntry.observe(viewLifecycleOwner) {
             onCoordinatesUpdated(it)
         }
     }
 
-    private fun onCoordinatesUpdated(updatedCoordinates: MutableList<Location>) {
-        if (updatedCoordinates.isNotEmpty()) {
+    private fun onCoordinatesUpdated(trackingExerciseEntry: TrackingExerciseEntry) {
+        if (trackingExerciseEntry.locationList.isNotEmpty()) {
             println(
-                "Coordinate update: (${updatedCoordinates.last().latitude},${
-                    updatedCoordinates.last().longitude
+                "Coordinate update: (${trackingExerciseEntry.locationList.last().latitude},${
+                    trackingExerciseEntry.locationList.last().longitude
                 })"
             )
         }
-        coordinates = updatedCoordinates
+        this.trackingExerciseEntry = trackingExerciseEntry
         drawTravelPath()
         setStatTexts()
     }
@@ -137,7 +146,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun drawPolyline() {
         val polylineOptions = PolylineOptions()
-        coordinates.forEach {
+        trackingExerciseEntry.locationList.forEach {
             val latLng = LatLng(it.latitude, it.longitude)
             polylineOptions.add(latLng)
         }
@@ -146,11 +155,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun addMarkerInitialLocation() {
-        if (coordinates.isEmpty()) {
+        if (trackingExerciseEntry.locationList.isEmpty()) {
             return
         }
         markerInitialLocation?.remove()
-        val first = coordinates.first()
+        val first = trackingExerciseEntry.locationList.first()
         val latLng = LatLng(first.latitude, first.longitude)
         markerInitialLocation = googleMap.addMarker(
             MarkerOptions().position(latLng).title("Start Location")
@@ -158,11 +167,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun addMarkerCurrentLocation() {
-        if (coordinates.isEmpty()) {
+        if (trackingExerciseEntry.locationList.isEmpty()) {
             return
         }
         markerCurrentLocation?.remove()
-        val last = coordinates.last()
+        val last = trackingExerciseEntry.locationList.last()
         val latLng = LatLng(last.latitude, last.longitude)
         markerCurrentLocation = googleMap.addMarker(
             MarkerOptions().position(latLng).title("Current Location")
@@ -177,12 +186,18 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun setStatTexts() {
         val type = exerciseType ?: "Unknown"
-        view.findViewById<TextView>(R.id.map_exercise_type).text = "Type: $type"
-        view.findViewById<TextView>(R.id.map_exercise_avg_speed).text = "Avg speed: "
-        view.findViewById<TextView>(R.id.map_exercise_curr_speed).text = "Curr speed: "
-        view.findViewById<TextView>(R.id.map_exercise_climb).text = "Climb: "
-        view.findViewById<TextView>(R.id.map_exercise_calories).text = "Calories: "
-        view.findViewById<TextView>(R.id.map_exercise_distance).text = "Distance: "
+        val typeText = "Type: $type"
+        val avgSpeedText = "Avg speed: ${trackingExerciseEntry.avgSpeed}"
+        val currSpeedText = "Curr speed: ${trackingExerciseEntry.getCurrentSpeed()}"
+        val climbText = "Climb: ${trackingExerciseEntry.climb}"
+        val caloriesText = "Calories: ${trackingExerciseEntry.calorie}"
+        val distanceText = "Distance: ${trackingExerciseEntry.distance}"
+        view.findViewById<TextView>(R.id.map_exercise_type).text = typeText
+        view.findViewById<TextView>(R.id.map_exercise_avg_speed).text = avgSpeedText
+        view.findViewById<TextView>(R.id.map_exercise_curr_speed).text = currSpeedText
+        view.findViewById<TextView>(R.id.map_exercise_climb).text = climbText
+        view.findViewById<TextView>(R.id.map_exercise_calories).text = caloriesText
+        view.findViewById<TextView>(R.id.map_exercise_distance).text = distanceText
     }
 
 

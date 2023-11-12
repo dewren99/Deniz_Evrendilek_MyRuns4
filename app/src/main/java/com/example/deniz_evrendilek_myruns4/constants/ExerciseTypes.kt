@@ -4,6 +4,8 @@ import android.content.Context
 import com.example.deniz_evrendilek_myruns4.R
 
 object ExerciseTypes {
+    const val EXERCISE_TYPE_UNKNOWN_ID = -1
+    private const val EXERCISE_TYPE_UNKNOWN_STR = "Unknown"
     private lateinit var _types: Array<String>
     private lateinit var _typesWithIntIds: Map<String, Int>
     fun init(context: Context) {
@@ -17,6 +19,6 @@ object ExerciseTypes {
         _typesWithIntIds = temp
     }
 
-    fun getString(index: Int) = _types[index]
-    fun getId(type: String) = _typesWithIntIds[type]
+    fun getString(index: Int) = _types.getOrElse(index) { EXERCISE_TYPE_UNKNOWN_STR }
+    fun getId(type: String?) = _typesWithIntIds[type] ?: EXERCISE_TYPE_UNKNOWN_ID
 }

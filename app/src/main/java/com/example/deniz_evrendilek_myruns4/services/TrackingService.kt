@@ -11,6 +11,9 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.MutableLiveData
 import com.example.deniz_evrendilek_myruns4.R
+import com.example.deniz_evrendilek_myruns4.constants.ExerciseTypes.EXERCISE_TYPE_UNKNOWN_ID
+import com.example.deniz_evrendilek_myruns4.constants.InputTypes.INPUT_TYPE_UNKNOWN_ID
+import com.example.deniz_evrendilek_myruns4.data.model.TrackingExerciseEntry
 import com.example.deniz_evrendilek_myruns4.managers.LocationTrackingManager
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.CoroutineScope
@@ -24,6 +27,8 @@ import kotlinx.coroutines.flow.onEach
 class TrackingService : Service() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private lateinit var locationTrackingManager: LocationTrackingManager
+    private var exerciseTypeId: Int = EXERCISE_TYPE_UNKNOWN_ID
+    private var inputTypeId: Int = INPUT_TYPE_UNKNOWN_ID
 
     override fun onBind(intent: Intent?): IBinder? {
         // TODO: onBind vs onStartCommand, look at starting notification here
@@ -33,7 +38,6 @@ class TrackingService : Service() {
     override fun onCreate() {
         super.onCreate()
         initLocationProvider()
-        initTrackedCoordinates()
     }
 
     private fun initLocationProvider() {
@@ -44,7 +48,12 @@ class TrackingService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
-            START -> start()
+            START -> {
+                exerciseTypeId = intent.getIntExtra("EXERCISE_TYPE_ID", EXERCISE_TYPE_UNKNOWN_ID)
+                inputTypeId = intent.getIntExtra("INPUT_TYPE_ID", INPUT_TYPE_UNKNOWN_ID)
+                start()
+            }
+
             STOP -> stop()
             else -> throw IllegalStateException(
                 "Unsupported intent?.action, please pass " + "START_TRACKING or STOP_TRACKING"
@@ -88,7 +97,7 @@ class TrackingService : Service() {
     }
 
     private fun onLocationUpdate(location: Location) {
-        addToTrackedCoordinates(location)
+        addToTrackedExerciseData(inputTypeId, exerciseTypeId, location)
         println("Tracking Service: ${location.latitude},${location.longitude}")
     }
 
@@ -102,6 +111,21 @@ class TrackingService : Service() {
         scope.cancel()
     }
 
+//    private fun initExerciseEntryTrackingData() {
+//        if (inputType == null) {
+//            return
+//        }
+//        val inputTypeId = InputTypes.getId(inputType!!) ?: return
+//        val exerciseTypeId = ExerciseTypes.getId(exerciseType)
+//
+//        val trackingExerciseEntry = TrackingExerciseEntry(
+//            inputType = inputTypeId,
+//            activityType = exerciseTypeId,
+//            dateTime = Calendar.getInstance(),
+//            locationList = trackedCoordinates.value ?: listOf()
+//        )
+//    }
+
     companion object {
         private const val LOCATION_POLL_INTERVAL = 1000L
         const val NOTIFICATION_IMPORTANCE = NotificationManager.IMPORTANCE_LOW
@@ -112,16 +136,23 @@ class TrackingService : Service() {
         const val STOP = "STOP_TRACKING_SERVICE"
 
         // TODO: Convert toExerciseEntry Data
-        val trackedCoordinates = MutableLiveData<MutableList<Location>>()
-        private fun initTrackedCoordinates() {
-            trackedCoordinates.postValue(mutableListOf())
-        }
+        val trackedExerciseEntry =
+            MutableLiveData(TrackingExerciseEntry.emptyTrackingExerciseEntry())
 
-        private fun addToTrackedCoordinates(location: Location) {
-            val coordinates = trackedCoordinates.value ?: return
-
-            coordinates.add(location)
-            trackedCoordinates.postValue(coordinates)
+        private fun addToTrackedExerciseData(
+            inputType: Int, exerciseType: Int, location:
+            Location
+        ) {
+            val entry = trackedExerciseEntry.value ?: return
+            val locations = entry.locationList.toMutableList()
+            locations.add(location)
+            val update = TrackingExerciseEntry(
+                inputType = inputType,
+                activityType = exerciseType,
+                dateTime = entry.dateTime,
+                locationList = locations.toList()
+            )
+            trackedExerciseEntry.postValue(update)
         }
     }
 }
