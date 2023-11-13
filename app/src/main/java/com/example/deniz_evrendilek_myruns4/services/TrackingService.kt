@@ -1,5 +1,6 @@
 package com.example.deniz_evrendilek_myruns4.services
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
@@ -64,20 +65,11 @@ class TrackingService : Service() {
     }
 
     private fun start() {
-        setupLocationListener()
-        setupNotificationChannel()
         setupNotification()
+        setupLocationListener()
     }
 
     private fun setupNotification() {
-        val notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-        notification.setContentTitle("MyRuns").setContentText("Recording your path now")
-            .setSmallIcon(R.drawable.el_gato_drawable).setOngoing(true).setAutoCancel(false)
-
-        startForeground(FOREGROUND_ID, notification.build())
-    }
-
-    private fun setupNotificationChannel() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             println("Cannot create Notification Channel, Android SDK is too old")
             return
@@ -88,6 +80,19 @@ class TrackingService : Service() {
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
+
+        val notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+        notification.setContentTitle("MyRuns")
+            .setContentText("Recording your path now")
+            .setSmallIcon(R.drawable.el_gato_drawable)
+            .setOngoing(true)
+            .setAutoCancel(false)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            notification.foregroundServiceBehavior = Notification.FOREGROUND_SERVICE_IMMEDIATE
+        }
+
+        startForeground(FOREGROUND_ID, notification.build())
     }
 
     private fun setupLocationListener() {
