@@ -21,10 +21,13 @@
         <action
             android:id="@+id/action_mainFragment_to_displayEntryFragment"
             app:destination="@id/displayEntryFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_displayMapFragment"
+            app:destination="@id/displayMapFragment" />
     </fragment>
     <fragment
         android:id="@+id/entryFragment"
-        android:name="com.example.deniz_evrendilek_myruns4.ui.fragments.navigations.EntryFragment"
+        android:name="com.example.deniz_evrendilek_myruns4.ui.fragments.navigations.exercise.createexercise.EntryFragment"
         android:label="fragment_entry"
         tools:layout="@layout/fragment_entry">
         <action
@@ -33,7 +36,7 @@
     </fragment>
     <fragment
         android:id="@+id/mapFragment"
-        android:name="com.example.deniz_evrendilek_myruns4.ui.fragments.navigations.MapFragment"
+        android:name="com.example.deniz_evrendilek_myruns4.ui.fragments.navigations.exercise.createexercise.MapFragment"
         android:label="fragment_map"
         tools:layout="@layout/fragment_map">
         <action
@@ -50,11 +53,20 @@
     </fragment>
     <fragment
         android:id="@+id/displayEntryFragment"
-        android:name="com.example.deniz_evrendilek_myruns4.ui.fragments.navigations.DisplayEntryFragment"
+        android:name="com.example.deniz_evrendilek_myruns4.ui.fragments.navigations.exercise.displayexercise.DisplayEntryFragment"
         android:label="fragment_display_entry"
         tools:layout="@layout/fragment_display_entry" >
         <action
             android:id="@+id/action_displayEntryFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/displayMapFragment"
+        android:name="com.example.deniz_evrendilek_myruns4.ui.fragments.navigations.exercise.displayexercise.DisplayMapFragment"
+        android:label="fragment_display_map"
+        tools:layout="@layout/fragment_display_map" >
+        <action
+            android:id="@+id/action_displayMapFragment_to_mainFragment"
             app:destination="@id/mainFragment" />
     </fragment>
 </navigation>

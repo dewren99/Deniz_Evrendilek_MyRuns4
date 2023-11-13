@@ -1,8 +1,7 @@
-package com.example.deniz_evrendilek_myruns4.ui.fragments.navigations
+package com.example.deniz_evrendilek_myruns4.ui.fragments.navigations.exercise.createexercise
 
 import android.content.Intent
 import android.graphics.Color
-import android.icu.math.BigDecimal
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,13 +15,16 @@ import androidx.navigation.fragment.findNavController
 import com.example.deniz_evrendilek_myruns4.R
 import com.example.deniz_evrendilek_myruns4.constants.ExerciseTypes
 import com.example.deniz_evrendilek_myruns4.constants.InputTypes
-import com.example.deniz_evrendilek_myruns4.constants.PreferenceConstants
 import com.example.deniz_evrendilek_myruns4.data.model.TrackingExerciseEntry
 import com.example.deniz_evrendilek_myruns4.services.TrackingService
+import com.example.deniz_evrendilek_myruns4.ui.fragments.navigations.exercise.DrawLocation
+import com.example.deniz_evrendilek_myruns4.ui.fragments.navigations.exercise.LocationStatistics
+import com.example.deniz_evrendilek_myruns4.ui.fragments.navigations.exercise.interfaces.MapFragmentInterface
+import com.example.deniz_evrendilek_myruns4.ui.viewmodel.ExerciseEntryViewModel
+import com.example.deniz_evrendilek_myruns4.ui.viewmodel.ExerciseEntryViewModelFactory
 import com.example.deniz_evrendilek_myruns4.ui.viewmodel.StartFragmentViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -32,16 +34,18 @@ import com.google.android.gms.maps.model.PolylineOptions
 
 const val MAP_HEADER = "Map"
 
-class MapFragment : Fragment(), OnMapReadyCallback {
+class MapFragment : Fragment(), MapFragmentInterface {
     private lateinit var view: View
     private lateinit var buttonCancel: Button
     private lateinit var buttonSave: Button
-    private lateinit var mapFragment: SupportMapFragment
-    private lateinit var googleMap: GoogleMap
+    override lateinit var mapFragment: SupportMapFragment
+    override lateinit var googleMap: GoogleMap
     private lateinit var trackingExerciseEntry: TrackingExerciseEntry
     private var markerInitialLocation: Marker? = null
     private var markerCurrentLocation: Marker? = null
     private lateinit var startFragmentViewModel: StartFragmentViewModel
+    private lateinit var exerciseEntryViewModel: ExerciseEntryViewModel
+    private lateinit var exerciseEntryViewModelFactory: ExerciseEntryViewModelFactory
     private var exerciseType: String? = null
     private var inputType: String? = null
 
@@ -51,8 +55,26 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_map, container, false)
 
+        initViewModels()
+        initViewModelObservers()
+
+        setToolbarHeader()
+        setupButtons()
+        initMap()
+
+        return view
+    }
+
+    override fun initViewModels() {
         startFragmentViewModel =
             ViewModelProvider(requireActivity())[StartFragmentViewModel::class.java]
+        exerciseEntryViewModelFactory = ExerciseEntryViewModelFactory(requireActivity())
+        exerciseEntryViewModel = ViewModelProvider(
+            requireActivity(), exerciseEntryViewModelFactory
+        )[ExerciseEntryViewModel::class.java]
+    }
+
+    override fun initViewModelObservers() {
         startFragmentViewModel.inputAndActivityType.observe(viewLifecycleOwner) {
             inputType = it.first
 
@@ -60,12 +82,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 exerciseType = it.second
             }
         }
-
-        setToolbarHeader()
-        setupButtons()
-        setupMap()
-
-        return view
     }
 
     private fun startTrackingService() {
@@ -102,11 +118,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             )
         }
         this.trackingExerciseEntry = trackingExerciseEntry
-        drawTravelPath()
+        DrawLocation(trackingExerciseEntry.latLngList, googleMap).draw()
         setStatTexts()
     }
 
-    private fun setupMap() {
+    override fun initMap() {
         mapFragment = childFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
@@ -120,7 +136,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             findNavController().navigate(R.id.action_mapFragment_to_mainFragment)
         }
         buttonSave.setOnClickListener {
-            onExit()
+            onSave()
             findNavController().navigate(R.id.action_mapFragment_to_mainFragment)
         }
     }
@@ -133,6 +149,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         requireActivity().findViewById<Toolbar>(R.id.toolbar).title = resources.getString(
             R.string.myruns
         )
+    }
+
+    private fun onSave() {
+        restoreToolbarHeader()
+        Intent(requireActivity().applicationContext, TrackingService::class.java).apply {
+            action = TrackingService.STOP
+            requireActivity().startService(this)
+        }
+        val exerciseEntry = trackingExerciseEntry.toExerciseEntry()
+        exerciseEntryViewModel.insert(exerciseEntry)
     }
 
     private fun onExit() {
@@ -193,77 +219,36 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun setStatTexts() {
         val exerciseTypeTextView = view.findViewById<TextView>(R.id.map_exercise_type)
         val caloriesTextView = view.findViewById<TextView>(R.id.map_exercise_calories)
+        val avgSpeedTextView = view.findViewById<TextView>(R.id.map_exercise_avg_speed)
+        val currSpeedTextView = view.findViewById<TextView>(R.id.map_exercise_curr_speed)
+        val climbTextView = view.findViewById<TextView>(R.id.map_exercise_climb)
+        val distanceTextView = view.findViewById<TextView>(R.id.map_exercise_distance)
 
         val type = exerciseType ?: "Unknown"
         val typeText = "Type: $type"
-        val caloriesText = "Calories: ${trackingExerciseEntry.calorie.toInt()}"
-
         exerciseTypeTextView.text = typeText
+
+        val caloriesText = "Calories: ${trackingExerciseEntry.calorie.toInt()}"
         caloriesTextView.text = caloriesText
-        when (PreferenceConstants.getUnit(requireContext())) {
-            PreferenceConstants.UNIT_PREFERENCE_METRIC -> setStatsInMetric()
-            PreferenceConstants.UNIT_PREFERENCE_IMPERIAL -> setStatsInImperial()
-        }
-    }
 
-    private fun roundValues(double: Double): Double {
-        return BigDecimal(double).setScale(2, BigDecimal.ROUND_HALF_EVEN).toDouble()
-    }
+        distanceTextView.text = LocationStatistics.distance(
+            requireContext(), trackingExerciseEntry.distance, "Distance: "
+        )
+        climbTextView.text = LocationStatistics.distance(
+            requireContext(), trackingExerciseEntry.climb, "Climb: "
+        )
+        avgSpeedTextView.text = LocationStatistics.distance(
+            requireContext(), trackingExerciseEntry.avgSpeed, "Avg speed: "
+        )
 
-    private fun setStatsInMetric() {
-        val avgSpeedTextView = view.findViewById<TextView>(R.id.map_exercise_avg_speed)
-        val currSpeedTextView = view.findViewById<TextView>(R.id.map_exercise_curr_speed)
-        val climbTextView = view.findViewById<TextView>(R.id.map_exercise_climb)
-        val distanceTextView = view.findViewById<TextView>(R.id.map_exercise_distance)
-
-        val distanceAdjusted = roundValues(trackingExerciseEntry.distance / 1000)
-        val distanceText = "Distance: $distanceAdjusted Kilometers"
-        distanceTextView.text = distanceText
-
-        val climbAdjusted = roundValues(trackingExerciseEntry.climb / 1000)
-        val climbText = "Climb: $climbAdjusted Kilometers"
-        climbTextView.text = climbText
-
-        val avgSpeedAdjusted = roundValues(trackingExerciseEntry.avgSpeed * 3.6)
-        val avgSpeedText = "Avg speed: $avgSpeedAdjusted km/h"
-        avgSpeedTextView.text = avgSpeedText
-
-        var currSpeedAdjusted = "n/a"
+        var currSpeedText = "Curr speed: n/a"
         if (trackingExerciseEntry.getCurrentSpeed() != null) {
-            currSpeedAdjusted =
-                roundValues(trackingExerciseEntry.getCurrentSpeed()!! * 3.6).toString() + "km/h"
+            currSpeedText = LocationStatistics.speed(
+                requireContext(), trackingExerciseEntry.getCurrentSpeed()!!, "Curr speed: "
+            )
         }
-        val currSpeedText = "Curr speed: $currSpeedAdjusted"
         currSpeedTextView.text = currSpeedText
     }
-
-    private fun setStatsInImperial() {
-        val avgSpeedTextView = view.findViewById<TextView>(R.id.map_exercise_avg_speed)
-        val currSpeedTextView = view.findViewById<TextView>(R.id.map_exercise_curr_speed)
-        val climbTextView = view.findViewById<TextView>(R.id.map_exercise_climb)
-        val distanceTextView = view.findViewById<TextView>(R.id.map_exercise_distance)
-
-        val distanceAdjusted = roundValues(trackingExerciseEntry.distance / 1609)
-        val distanceText = "Distance: $distanceAdjusted Miles"
-        distanceTextView.text = distanceText
-
-        val climbAdjusted = roundValues(trackingExerciseEntry.climb / 1609)
-        val climbText = "Climb: $climbAdjusted Miles"
-        climbTextView.text = climbText
-
-        val avgSpeedAdjusted = roundValues(trackingExerciseEntry.avgSpeed * 2.23694)
-        val avgSpeedText = "Avg speed: $avgSpeedAdjusted m/h"
-        avgSpeedTextView.text = avgSpeedText
-
-        var currSpeedAdjusted = "n/a"
-        if (trackingExerciseEntry.getCurrentSpeed() != null) {
-            currSpeedAdjusted =
-                roundValues(trackingExerciseEntry.getCurrentSpeed()!! * 2.23694).toString() + "m/h"
-        }
-        val currSpeedText = "Curr speed: $currSpeedAdjusted"
-        currSpeedTextView.text = currSpeedText
-    }
-
 
     override fun onMapReady(p0: GoogleMap) {
         googleMap = p0

@@ -1,4 +1,4 @@
-package com.example.deniz_evrendilek_myruns4.ui.fragments.navigations
+package com.example.deniz_evrendilek_myruns4.ui.fragments.navigations.exercise.displayexercise
 
 import android.graphics.Color
 import android.os.Bundle

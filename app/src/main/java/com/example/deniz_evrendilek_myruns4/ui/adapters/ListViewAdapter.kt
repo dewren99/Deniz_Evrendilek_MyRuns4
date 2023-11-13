@@ -11,6 +11,7 @@ import com.example.deniz_evrendilek_myruns4.constants.ExerciseTypes
 import com.example.deniz_evrendilek_myruns4.constants.InputTypes
 import com.example.deniz_evrendilek_myruns4.data.model.ExerciseEntry
 import com.example.deniz_evrendilek_myruns4.data.model.ManualExerciseEntryForm
+import com.example.deniz_evrendilek_myruns4.ui.fragments.navigations.exercise.LocationStatistics
 
 
 class ListViewAdapter(
@@ -30,7 +31,7 @@ class ListViewAdapter(
         val exerciseType = ExerciseTypes.getString(item.activityType)
         val dateTime = ManualExerciseEntryForm.getDateTimeStr(item)
         val duration = ManualExerciseEntryForm.getDurationStr(item)
-        val distance = ManualExerciseEntryForm.getDistanceStr(unitPreference, item)
+        val distance = LocationStatistics.distance(context, item.distance)
 
         val title = "$inputType: $exerciseType, $dateTime"
         val text = "$distance $duration"

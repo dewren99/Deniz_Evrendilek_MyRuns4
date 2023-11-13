@@ -7,34 +7,27 @@ import com.example.deniz_evrendilek_myruns4.constants.InputTypes.INPUT_TYPE_UNKN
 import com.google.android.gms.maps.model.LatLng
 
 data class TrackingExerciseEntry(
-    val inputType: Int,
-    val activityType: Int,
-    val dateTime: Calendar,
-    val duration: Double,
+    val inputType: Int, val activityType: Int, val dateTime: Calendar, val duration: Double,
     /**
      * distance is in meters
      */
-    val distance: Double,
-    val avgPace: Double,
+    val distance: Double, val avgPace: Double,
     /**
      * avgSpeed in meter per second
      */
-    val avgSpeed: Double,
-    val calorie: Double,
+    val avgSpeed: Double, val calorie: Double,
     /**
      * climb in meters
      */
-    val climb: Double,
-    val heartRate: Double,
-    val comment: String,
-    val locationList: List<Location>
+    val climb: Double, val heartRate: Double, val comment: String, val locationList: List<Location>
 ) {
+    val latLngList: ArrayList<LatLng>
+        get() {
+            return locationToLatLngList(this.locationList)
+        }
 
     constructor(
-        inputType: Int,
-        activityType: Int,
-        dateTime: Calendar,
-        locationList: List<Location>
+        inputType: Int, activityType: Int, dateTime: Calendar, locationList: List<Location>
     ) : this(
         inputType = inputType,
         activityType = activityType,
@@ -163,15 +156,14 @@ data class TrackingExerciseEntry(
             }
             val metConst = when {
                 currentSpeed < 2.0 -> 2.0
-                currentSpeed < 5.0 -> 3.0
-                currentSpeed < 8.0 -> 6.0
-                else -> 8.0  // Running fast
+                currentSpeed < 5.0 -> 5.0
+                currentSpeed < 8.0 -> 8.0
+                else -> 11.0
             }
             val avgHumanWeightKgCanada = 77.0
             val calPerMin = (metConst * avgHumanWeightKgCanada * 3.5) / 200.0
             val mins = getTotalDuration(locationList) / 60.0
-            val calories = calPerMin * mins
-            return calories
+            return calPerMin * mins
 
         }
 

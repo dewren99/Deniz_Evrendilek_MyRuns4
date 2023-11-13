@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragments.navigations.exercise.createexercise.MapFragment">
+    tools:context=".ui.fragments.navigations.exercise.displayexercise.DisplayMapFragment">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <fragment
-            android:id="@+id/map_fragment"
+            android:id="@+id/display_map_fragment"
             class="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
@@ -24,71 +24,40 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/map_exercise_type"
+            android:id="@+id/display_map_exercise_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/map_exercise_avg_speed"
+            android:id="@+id/display_map_exercise_avg_speed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/map_exercise_curr_speed"
+            android:id="@+id/display_map_exercise_curr_speed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/map_exercise_climb"
+            android:id="@+id/display_map_exercise_climb"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/map_exercise_calories"
+            android:id="@+id/display_map_exercise_calories"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/map_exercise_distance"
+            android:id="@+id/display_map_exercise_distance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp" />
     </LinearLayout>
 
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="10dp"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/map_cancel_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
-            android:layout_weight="1"
-            android:backgroundTint="@color/palette_1"
-            android:text="@string/button_cancel"
-            android:textSize="25sp"
-            app:cornerRadius="0dp"
-            tools:ignore="VisualLintButtonSize" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/map_save_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="@color/palette_1"
-            android:text="@string/button_save"
-            android:textSize="25sp"
-            app:cornerRadius="0dp"
-            tools:ignore="VisualLintButtonSize" />
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

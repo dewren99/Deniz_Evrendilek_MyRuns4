@@ -5,6 +5,7 @@ package com.example.deniz_evrendilek_myruns4.data.model
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import com.example.deniz_evrendilek_myruns4.constants.PreferenceConstants
+import com.example.deniz_evrendilek_myruns4.ui.fragments.navigations.exercise.LocationStatistics
 import com.example.deniz_evrendilek_myruns4.utils.DateTimeUtils
 import java.util.Locale
 
@@ -96,7 +97,7 @@ class ManualExerciseEntryForm(
         }
 
         fun getDurationStr(exerciseEntry: ExerciseEntry): String {
-            return "${exerciseEntry.duration} secs"
+            return "${LocationStatistics.roundValues(exerciseEntry.duration)} secs"
         }
 
         fun getDistanceStr(unit: String, exerciseEntry: ExerciseEntry): String {

@@ -26,17 +26,29 @@ class HistoryFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         view = inflater.inflate(R.layout.fragment_history, container, false)
+        initViews()
+        initViewModels()
+        initViewModelObservers()
+
+        return view
+    }
+
+    private fun initViews() {
         listView = view.findViewById(R.id.history_list_view)
         listViewAdapter = ListViewAdapter(
             requireContext(), emptyArray(), UNIT_PREFERENCE_DEFAULT, ::handleHistoryItemClick
         )
         listView.adapter = listViewAdapter
+    }
 
+    private fun initViewModels() {
         exerciseEntryViewModelFactory = ExerciseEntryViewModelFactory(requireActivity())
         exerciseEntryViewModel = ViewModelProvider(
             requireActivity(), exerciseEntryViewModelFactory
         )[ExerciseEntryViewModel::class.java]
+    }
 
+    private fun initViewModelObservers() {
         exerciseEntryViewModel.allExerciseEntries.observe(viewLifecycleOwner) { (items, unit) ->
             if (items == null || unit == null) {
                 return@observe
@@ -46,11 +58,14 @@ class HistoryFragment : Fragment() {
             )
             listView.adapter = listViewAdapter
         }
-        return view
     }
 
     private fun handleHistoryItemClick(exerciseEntry: ExerciseEntry) {
         exerciseEntryViewModel.display(exerciseEntry)
-        findNavController().navigate(R.id.action_mainFragment_to_displayEntryFragment)
+        if (exerciseEntry.locationList.isEmpty()) {
+            findNavController().navigate(R.id.action_mainFragment_to_displayEntryFragment)
+            return
+        }
+        findNavController().navigate(R.id.action_mainFragment_to_displayMapFragment)
     }
 }

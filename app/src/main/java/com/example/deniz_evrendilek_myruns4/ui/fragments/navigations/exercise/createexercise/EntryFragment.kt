@@ -1,4 +1,4 @@
-package com.example.deniz_evrendilek_myruns4.ui.fragments.navigations
+package com.example.deniz_evrendilek_myruns4.ui.fragments.navigations.exercise.createexercise
 
 import android.content.DialogInterface
 import android.os.Bundle
@@ -212,7 +212,8 @@ class EntryFragment : Fragment(), DateListener, TimeListener {
     }
 
     private fun createAndShowDurationDialog() {
-        createAndShowAlertDialog(ENTRY_OPTIONS[2],
+        createAndShowAlertDialog(
+            ENTRY_OPTIONS[2],
             InputType.TYPE_CLASS_NUMBER,
             null,
             POSITIVE_BUTTON_TEXT,
@@ -222,7 +223,8 @@ class EntryFragment : Fragment(), DateListener, TimeListener {
     }
 
     private fun createAndShowDistanceDialog() {
-        createAndShowAlertDialog(ENTRY_OPTIONS[3],
+        createAndShowAlertDialog(
+            ENTRY_OPTIONS[3],
             InputType.TYPE_CLASS_NUMBER,
             null,
             POSITIVE_BUTTON_TEXT,
@@ -232,7 +234,8 @@ class EntryFragment : Fragment(), DateListener, TimeListener {
     }
 
     private fun createAndShowCaloriesDialog() {
-        createAndShowAlertDialog(ENTRY_OPTIONS[4],
+        createAndShowAlertDialog(
+            ENTRY_OPTIONS[4],
             InputType.TYPE_CLASS_NUMBER,
             null,
             POSITIVE_BUTTON_TEXT,
@@ -242,7 +245,8 @@ class EntryFragment : Fragment(), DateListener, TimeListener {
     }
 
     private fun createAndShowHeartRateDialog() {
-        createAndShowAlertDialog(ENTRY_OPTIONS[5],
+        createAndShowAlertDialog(
+            ENTRY_OPTIONS[5],
             InputType.TYPE_CLASS_NUMBER,
             null,
             POSITIVE_BUTTON_TEXT,
@@ -253,7 +257,8 @@ class EntryFragment : Fragment(), DateListener, TimeListener {
 
     private fun createAndShowCommentDialog() {
         val hint = "How did it go? Notes here."
-        createAndShowAlertDialog(ENTRY_OPTIONS[6],
+        createAndShowAlertDialog(
+            ENTRY_OPTIONS[6],
             InputType.TYPE_TEXT_FLAG_MULTI_LINE,
             hint,
             POSITIVE_BUTTON_TEXT,
