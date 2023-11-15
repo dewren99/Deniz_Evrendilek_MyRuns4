@@ -234,7 +234,6 @@ class MapFragment : Fragment(), MapFragmentInterface {
     }
 
     override fun onDestroyView() {
-        println("onDestroyView on MapFragment")
         super.onDestroyView()
         googleMap.clear()
         unsubscribeFromTrackingService()

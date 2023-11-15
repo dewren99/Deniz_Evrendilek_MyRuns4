@@ -35,9 +35,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onNewIntent(intent: Intent?) {
-        println("onNewIntent")
         super.onNewIntent(intent)
-        handleOnNotificationClick(intent)
+        // Don't call here otherwise map gets recreated
+        // when it's already open
+//         handleOnNotificationClick(intent)
     }
 
     private fun initGlobal() {
