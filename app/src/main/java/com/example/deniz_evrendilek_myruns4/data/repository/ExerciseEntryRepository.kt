@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.example.deniz_evrendilek_myruns4.data.repository
 
 import com.example.deniz_evrendilek_myruns4.data.dao.ExerciseEntryDao
@@ -29,6 +31,7 @@ class ExerciseEntryRepository(
         }
     }
 
+    @Suppress("unused")
     fun deleteAll() {
         CoroutineScope(IO).launch {
             exerciseEntryDao.deleteAll()

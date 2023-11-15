@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package com.example.deniz_evrendilek_myruns4.data.model
 
 import android.icu.text.SimpleDateFormat

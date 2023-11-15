@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.deniz_evrendilek_myruns4.R
 import com.example.deniz_evrendilek_myruns4.constants.ExerciseTypes
+import com.example.deniz_evrendilek_myruns4.constants.ExerciseTypes.EXERCISE_TYPE_UNKNOWN_ID
 import com.example.deniz_evrendilek_myruns4.constants.InputTypes
 import com.example.deniz_evrendilek_myruns4.data.model.ExerciseEntry
 import com.example.deniz_evrendilek_myruns4.data.model.ManualExerciseEntryForm
@@ -110,12 +111,15 @@ class EntryFragment : Fragment(), DateListener, TimeListener {
 
     private fun onSave() {
         if (inputType == null || exerciseType == null) {
-            throw IllegalStateException("inputType or exerciseType  is null after navigation")
+            throw IllegalStateException("inputType or exerciseType is null after navigation")
         }
         val inputTypeId = InputTypes.getId(inputType!!)
         val exerciseTypeId = ExerciseTypes.getId(exerciseType!!)
-        if (inputTypeId == null || exerciseTypeId == null) {
-            throw IllegalStateException("inputType id or exerciseType id is null after navigation")
+        // IDs cannot be unknown when manually creating an entry
+        if (inputTypeId == EXERCISE_TYPE_UNKNOWN_ID || exerciseTypeId == EXERCISE_TYPE_UNKNOWN_ID) {
+            throw IllegalStateException(
+                "inputType id or exerciseType id is unknown after navigation"
+            )
         }
         val entry = ExerciseEntry(
             inputType = inputTypeId,
@@ -212,8 +216,7 @@ class EntryFragment : Fragment(), DateListener, TimeListener {
     }
 
     private fun createAndShowDurationDialog() {
-        createAndShowAlertDialog(
-            ENTRY_OPTIONS[2],
+        createAndShowAlertDialog(ENTRY_OPTIONS[2],
             InputType.TYPE_CLASS_NUMBER,
             null,
             POSITIVE_BUTTON_TEXT,
@@ -223,8 +226,7 @@ class EntryFragment : Fragment(), DateListener, TimeListener {
     }
 
     private fun createAndShowDistanceDialog() {
-        createAndShowAlertDialog(
-            ENTRY_OPTIONS[3],
+        createAndShowAlertDialog(ENTRY_OPTIONS[3],
             InputType.TYPE_CLASS_NUMBER,
             null,
             POSITIVE_BUTTON_TEXT,
@@ -234,8 +236,7 @@ class EntryFragment : Fragment(), DateListener, TimeListener {
     }
 
     private fun createAndShowCaloriesDialog() {
-        createAndShowAlertDialog(
-            ENTRY_OPTIONS[4],
+        createAndShowAlertDialog(ENTRY_OPTIONS[4],
             InputType.TYPE_CLASS_NUMBER,
             null,
             POSITIVE_BUTTON_TEXT,
@@ -245,8 +246,7 @@ class EntryFragment : Fragment(), DateListener, TimeListener {
     }
 
     private fun createAndShowHeartRateDialog() {
-        createAndShowAlertDialog(
-            ENTRY_OPTIONS[5],
+        createAndShowAlertDialog(ENTRY_OPTIONS[5],
             InputType.TYPE_CLASS_NUMBER,
             null,
             POSITIVE_BUTTON_TEXT,
@@ -257,8 +257,7 @@ class EntryFragment : Fragment(), DateListener, TimeListener {
 
     private fun createAndShowCommentDialog() {
         val hint = "How did it go? Notes here."
-        createAndShowAlertDialog(
-            ENTRY_OPTIONS[6],
+        createAndShowAlertDialog(ENTRY_OPTIONS[6],
             InputType.TYPE_TEXT_FLAG_MULTI_LINE,
             hint,
             POSITIVE_BUTTON_TEXT,

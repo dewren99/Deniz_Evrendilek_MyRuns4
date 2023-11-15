@@ -18,6 +18,7 @@ object InputTypes {
         _typesWithIntIds = temp
     }
 
+    fun isManualEntry(id: Int) = id == 0
     fun getString(index: Int) = _types[index]
     fun getId(type: String): Int = _typesWithIntIds[type] ?: INPUT_TYPE_UNKNOWN_ID
 }

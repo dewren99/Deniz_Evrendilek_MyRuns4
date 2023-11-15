@@ -17,7 +17,7 @@ import com.example.deniz_evrendilek_myruns4.ui.fragments.navigations.exercise.Lo
 class ListViewAdapter(
     private val context: Context,
     private var exerciseEntryList: Array<ExerciseEntry>,
-    private val unitPreference: String,
+    @Suppress("unused") private val unitPreference: String,
     private val onHistoryItemClick: (ExerciseEntry) -> Unit,
 ) : ArrayAdapter<ExerciseEntry>(context, R.layout.history_item, exerciseEntryList) {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
@@ -31,7 +31,13 @@ class ListViewAdapter(
         val exerciseType = ExerciseTypes.getString(item.activityType)
         val dateTime = ManualExerciseEntryForm.getDateTimeStr(item)
         val duration = ManualExerciseEntryForm.getDurationStr(item)
-        val distance = LocationStatistics.distance(context, item.distance)
+
+        val isManualEntry = InputTypes.isManualEntry(item.inputType)
+        val distance = if (isManualEntry) {
+            ManualExerciseEntryForm.getDistanceStr(unitPreference, item)
+        } else {
+            LocationStatistics.distance(context, item.distance)
+        }
 
         val title = "$inputType: $exerciseType, $dateTime"
         val text = "$distance $duration"

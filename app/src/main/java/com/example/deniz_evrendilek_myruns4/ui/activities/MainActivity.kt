@@ -2,6 +2,7 @@ package com.example.deniz_evrendilek_myruns4.ui.activities
 
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -23,7 +24,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        
+
         handleOnNotificationClick(intent)
         initGlobal()
 
@@ -61,12 +62,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun requestTrackingServicePermissions() {
+        val permissions = mutableListOf(
+            android.Manifest.permission.ACCESS_FINE_LOCATION,
+            android.Manifest.permission.ACCESS_COARSE_LOCATION,
+        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissions.add(android.Manifest.permission.POST_NOTIFICATIONS)
+        }
         ActivityCompat.requestPermissions(
-            this, arrayOf(
-                android.Manifest.permission.ACCESS_FINE_LOCATION,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                android.Manifest.permission.POST_NOTIFICATIONS
-            ), PermissionRequestCodes.PERMISSION_TRACKING_SERVICE
+            this, permissions.toTypedArray(), PermissionRequestCodes.PERMISSION_TRACKING_SERVICE
         )
     }
 

@@ -2,6 +2,7 @@ package com.example.deniz_evrendilek_myruns4.constants
 
 import android.content.Context
 import androidx.preference.PreferenceManager
+import com.example.deniz_evrendilek_myruns4.ui.fragments.navigations.exercise.LocationStatistics
 
 object PreferenceConstants {
     const val UNIT_PREFERENCE_KEY = "UNIT_PREFERENCE"
@@ -13,20 +14,23 @@ object PreferenceConstants {
         return miles * 1.609
     }
 
+    @Suppress("unused")
     fun metricValue(context: Context, value: Double): String {
         val unit = getUnit(context)
 
         val convertedValue = if (unit == UNIT_PREFERENCE_METRIC) milesToKm(value) else value
+        val finalValue = LocationStatistics.roundValues(convertedValue)
         val prefix = if (unit == UNIT_PREFERENCE_METRIC) "Kilometers" else "Miles"
 
-        return "$convertedValue $prefix"
+        return "$finalValue $prefix"
     }
 
     fun metricValue(unit: String, value: Double): String {
         val convertedValue = if (unit == UNIT_PREFERENCE_METRIC) milesToKm(value) else value
+        val finalValue = LocationStatistics.roundValues(convertedValue)
         val prefix = if (unit == UNIT_PREFERENCE_METRIC) "Kilometers" else "Miles"
 
-        return "$convertedValue $prefix"
+        return "$finalValue $prefix"
     }
 
     fun getUnit(context: Context): String {

@@ -51,8 +51,7 @@ data class TrackingExerciseEntry(
         if (!last.hasSpeed()) {
             return null
         }
-        val speed = last.speed.toDouble()
-        return speed
+        return last.speed.toDouble()
     }
 
     fun toExerciseEntry(): ExerciseEntry {
@@ -105,8 +104,7 @@ data class TrackingExerciseEntry(
             if (totalTimeHours <= 0) {
                 return 0.0
             }
-            val speed = (totalDistance / totalTimeHours)
-            return speed
+            return (totalDistance / totalTimeHours)
         }
 
         fun getAvgPace(locationList: List<Location>): Double {
@@ -119,8 +117,7 @@ data class TrackingExerciseEntry(
             if (totalTimeHours <= 0) {
                 return 0.0
             }
-            val pace = totalTimeHours / (totalDistance / 1000.0) // 1609.34 for mile
-            return pace
+            return totalTimeHours / (totalDistance / 1000.0) // 1609.34 for mile
         }
 
         /**
