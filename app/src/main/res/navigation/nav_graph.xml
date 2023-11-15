@@ -4,6 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     app:startDestination="@id/mainFragment">
 
+    <action
+        android:id="@+id/action_notification_to_mapFragment"
+        android:label="global_notification_action"
+        app:destination="@+id/mapFragment"
+        app:launchSingleTop="true" />
+
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.example.deniz_evrendilek_myruns4.ui.fragments.MainFragment"
@@ -55,7 +61,7 @@
         android:id="@+id/displayEntryFragment"
         android:name="com.example.deniz_evrendilek_myruns4.ui.fragments.navigations.exercise.displayexercise.DisplayEntryFragment"
         android:label="fragment_display_entry"
-        tools:layout="@layout/fragment_display_entry" >
+        tools:layout="@layout/fragment_display_entry">
         <action
             android:id="@+id/action_displayEntryFragment_to_mainFragment"
             app:destination="@id/mainFragment" />
@@ -64,7 +70,7 @@
         android:id="@+id/displayMapFragment"
         android:name="com.example.deniz_evrendilek_myruns4.ui.fragments.navigations.exercise.displayexercise.DisplayMapFragment"
         android:label="fragment_display_map"
-        tools:layout="@layout/fragment_display_map" >
+        tools:layout="@layout/fragment_display_map">
         <action
             android:id="@+id/action_displayMapFragment_to_mainFragment"
             app:destination="@id/mainFragment" />

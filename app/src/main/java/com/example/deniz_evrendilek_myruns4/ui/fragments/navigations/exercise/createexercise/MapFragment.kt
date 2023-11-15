@@ -1,7 +1,6 @@
 package com.example.deniz_evrendilek_myruns4.ui.fragments.navigations.exercise.createexercise
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -23,13 +22,9 @@ import com.example.deniz_evrendilek_myruns4.ui.fragments.navigations.exercise.in
 import com.example.deniz_evrendilek_myruns4.ui.viewmodel.ExerciseEntryViewModel
 import com.example.deniz_evrendilek_myruns4.ui.viewmodel.ExerciseEntryViewModelFactory
 import com.example.deniz_evrendilek_myruns4.ui.viewmodel.StartFragmentViewModel
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.PolylineOptions
 
 
 const val MAP_HEADER = "Map"
@@ -65,6 +60,34 @@ class MapFragment : Fragment(), MapFragmentInterface {
         return view
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        handleNavFromNotificationClick(arguments)
+
+    }
+
+    private fun handleNavFromNotificationClick(arguments: Bundle?) {
+        // determine if a notification click directed us here.
+        // We don't require to check EXERCISE_TYPE_ID since "Automatic" input type
+        // can give null exercise type.
+        val notNavigatedFromNotificationClick =
+            (arguments == null) || !arguments.containsKey("INPUT_TYPE_ID")
+        if (notNavigatedFromNotificationClick) {
+            return
+        }
+
+        val exerciseTypeId = arguments?.getInt("EXERCISE_TYPE_ID")
+        val inputTypeId = arguments?.getInt("INPUT_TYPE_ID")
+        println("bundle received: $exerciseTypeId $inputTypeId")
+
+        inputTypeId?.let {
+            inputType = InputTypes.getString(it)
+        }
+        exerciseTypeId?.let {
+            exerciseType = ExerciseTypes.getString(it)
+        }
+    }
+
     override fun initViewModels() {
         startFragmentViewModel =
             ViewModelProvider(requireActivity())[StartFragmentViewModel::class.java]
@@ -85,7 +108,9 @@ class MapFragment : Fragment(), MapFragmentInterface {
     }
 
     private fun startTrackingService() {
+        println("startTrackingService")
         if (inputType == null) {
+            println("Cannot Start Tracking Service, inputType missing!")
             return
         }
         val inputTypeId = InputTypes.getId(inputType!!)
@@ -169,53 +194,6 @@ class MapFragment : Fragment(), MapFragmentInterface {
         }
     }
 
-    private fun drawTravelPath() {
-        addMarkerInitialLocation()
-        drawPolyline()
-        addMarkerCurrentLocation()
-        focusMapToCurrentLocation()
-    }
-
-    private fun drawPolyline() {
-        val polylineOptions = PolylineOptions()
-        trackingExerciseEntry.locationList.forEach {
-            val latLng = LatLng(it.latitude, it.longitude)
-            polylineOptions.add(latLng)
-        }
-        polylineOptions.color(Color.BLACK)
-        googleMap.addPolyline(polylineOptions)
-    }
-
-    private fun addMarkerInitialLocation() {
-        if (trackingExerciseEntry.locationList.isEmpty()) {
-            return
-        }
-        markerInitialLocation?.remove()
-        val first = trackingExerciseEntry.locationList.first()
-        val latLng = LatLng(first.latitude, first.longitude)
-        markerInitialLocation = googleMap.addMarker(
-            MarkerOptions().position(latLng).title("Start Location")
-        )
-    }
-
-    private fun addMarkerCurrentLocation() {
-        if (trackingExerciseEntry.locationList.isEmpty()) {
-            return
-        }
-        markerCurrentLocation?.remove()
-        val last = trackingExerciseEntry.locationList.last()
-        val latLng = LatLng(last.latitude, last.longitude)
-        markerCurrentLocation = googleMap.addMarker(
-            MarkerOptions().position(latLng).title("Current Location")
-        )
-    }
-
-    private fun focusMapToCurrentLocation() {
-        val latLng = markerCurrentLocation?.position ?: return
-        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 16f)
-        googleMap.animateCamera(cameraUpdate)
-    }
-
     private fun setStatTexts() {
         val exerciseTypeTextView = view.findViewById<TextView>(R.id.map_exercise_type)
         val caloriesTextView = view.findViewById<TextView>(R.id.map_exercise_calories)
@@ -258,7 +236,7 @@ class MapFragment : Fragment(), MapFragmentInterface {
     override fun onDestroyView() {
         println("onDestroyView on MapFragment")
         super.onDestroyView()
-        googleMap.clear() // Replace 'googleMap' with your GoogleMap instance variable
+        googleMap.clear()
         unsubscribeFromTrackingService()
     }
 }
