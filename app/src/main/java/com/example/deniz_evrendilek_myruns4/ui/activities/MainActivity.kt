@@ -23,8 +23,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        println("onCreate")
+        
         handleOnNotificationClick(intent)
         initGlobal()
 
@@ -71,6 +70,11 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    /**
+     * Handles the Intent received created from TrackingService.
+     * Extract EXERCISE_TYPE_ID and INPUT_TYPE_ID, pass it to
+     * mapFragment on navigation.
+     */
     private fun handleOnNotificationClick(intent: Intent?) {
         if (intent?.extras == null) {
             return
@@ -92,8 +96,6 @@ class MainActivity : AppCompatActivity() {
         val bundle = bundleOf(
             "EXERCISE_TYPE_ID" to exerciseTypeId, "INPUT_TYPE_ID" to inputTypeId
         )
-        println("bundle: $exerciseTypeId $inputTypeId")
-
         navController.navigate(R.id.action_notification_to_mapFragment, bundle)
     }
 

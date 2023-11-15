@@ -24,7 +24,6 @@ import com.example.deniz_evrendilek_myruns4.ui.viewmodel.ExerciseEntryViewModelF
 import com.example.deniz_evrendilek_myruns4.ui.viewmodel.StartFragmentViewModel
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.Marker
 
 
 const val MAP_HEADER = "Map"
@@ -36,8 +35,6 @@ class MapFragment : Fragment(), MapFragmentInterface {
     override lateinit var mapFragment: SupportMapFragment
     override lateinit var googleMap: GoogleMap
     private lateinit var trackingExerciseEntry: TrackingExerciseEntry
-    private var markerInitialLocation: Marker? = null
-    private var markerCurrentLocation: Marker? = null
     private lateinit var startFragmentViewModel: StartFragmentViewModel
     private lateinit var exerciseEntryViewModel: ExerciseEntryViewModel
     private lateinit var exerciseEntryViewModelFactory: ExerciseEntryViewModelFactory
@@ -78,7 +75,6 @@ class MapFragment : Fragment(), MapFragmentInterface {
 
         val exerciseTypeId = arguments?.getInt("EXERCISE_TYPE_ID")
         val inputTypeId = arguments?.getInt("INPUT_TYPE_ID")
-        println("bundle received: $exerciseTypeId $inputTypeId")
 
         inputTypeId?.let {
             inputType = InputTypes.getString(it)
@@ -108,7 +104,6 @@ class MapFragment : Fragment(), MapFragmentInterface {
     }
 
     private fun startTrackingService() {
-        println("startTrackingService")
         if (inputType == null) {
             println("Cannot Start Tracking Service, inputType missing!")
             return
@@ -135,13 +130,6 @@ class MapFragment : Fragment(), MapFragmentInterface {
     }
 
     private fun onCoordinatesUpdated(trackingExerciseEntry: TrackingExerciseEntry) {
-        if (trackingExerciseEntry.locationList.isNotEmpty()) {
-            println(
-                "Coordinate update: (${trackingExerciseEntry.locationList.last().latitude},${
-                    trackingExerciseEntry.locationList.last().longitude
-                })"
-            )
-        }
         this.trackingExerciseEntry = trackingExerciseEntry
         DrawLocation(trackingExerciseEntry.latLngList, googleMap).draw()
         setStatTexts()

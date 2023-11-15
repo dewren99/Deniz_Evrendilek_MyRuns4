@@ -123,7 +123,6 @@ class TrackingService : Service() {
 
     private fun onLocationUpdate(location: Location) {
         addToTrackedExerciseData(inputTypeId, exerciseTypeId, location)
-        println("Tracking Service: ${location.latitude},${location.longitude}")
     }
 
     /**
@@ -138,7 +137,6 @@ class TrackingService : Service() {
                 // If the notification was clicked while app was already closed
                 // InputType & ExerciseType needs to be passed back.
                 // We cannot get these data otherwise
-                println("bundle create: $exerciseTypeId $inputTypeId")
                 putExtra("EXERCISE_TYPE_ID", exerciseTypeId)
                 putExtra("INPUT_TYPE_ID", inputTypeId)
             },
