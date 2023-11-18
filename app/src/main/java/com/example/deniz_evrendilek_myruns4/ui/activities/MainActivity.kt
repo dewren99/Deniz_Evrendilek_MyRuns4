@@ -25,13 +25,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        handleOnNotificationClick(intent)
         initGlobal()
 
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         toolbar.title = resources.getString(R.string.myruns)
         setSupportActionBar(toolbar)
         checkTrackingServicePermissions()
+
+        // App is run fresh for the first time
+        if (savedInstanceState == null) {
+            handleOnNotificationClick(intent)
+        }
     }
 
     override fun onNewIntent(intent: Intent?) {

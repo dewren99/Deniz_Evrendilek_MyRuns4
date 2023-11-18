@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -28,6 +29,7 @@ import com.google.android.gms.maps.SupportMapFragment
 
 const val MAP_HEADER = "Map"
 
+
 class MapFragment : Fragment(), MapFragmentInterface {
     private lateinit var view: View
     private lateinit var buttonCancel: Button
@@ -40,6 +42,23 @@ class MapFragment : Fragment(), MapFragmentInterface {
     private lateinit var exerciseEntryViewModelFactory: ExerciseEntryViewModelFactory
     private var exerciseType: String? = null
     private var inputType: String? = null
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    stopTrackingService()
+
+                    // Use default back button behavior
+                    isEnabled = false
+                    requireActivity().onBackPressed()
+                    isEnabled = true
+                }
+            })
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -108,6 +127,10 @@ class MapFragment : Fragment(), MapFragmentInterface {
             println("Cannot Start Tracking Service, inputType missing!")
             return
         }
+        if (activity == null || !isAdded) {
+            println("Cannot Start Tracking Service, Fragment not ready")
+            return
+        }
         val inputTypeId = InputTypes.getId(inputType!!)
         val exerciseTypeId = ExerciseTypes.getId(exerciseType)
         Intent(requireActivity().applicationContext, TrackingService::class.java).apply {
@@ -125,6 +148,7 @@ class MapFragment : Fragment(), MapFragmentInterface {
         }
     }
 
+    @Suppress("unused")
     private fun unsubscribeFromTrackingService() {
         TrackingService.trackedExerciseEntry.removeObservers(viewLifecycleOwner)
     }
@@ -146,11 +170,10 @@ class MapFragment : Fragment(), MapFragmentInterface {
 
         buttonCancel.setOnClickListener {
             onExit()
-            findNavController().navigate(R.id.action_mapFragment_to_mainFragment)
+
         }
         buttonSave.setOnClickListener {
             onSave()
-            findNavController().navigate(R.id.action_mapFragment_to_mainFragment)
         }
     }
 
@@ -164,23 +187,27 @@ class MapFragment : Fragment(), MapFragmentInterface {
         )
     }
 
-    private fun onSave() {
-        restoreToolbarHeader()
+    private fun stopTrackingService() {
         Intent(requireActivity().applicationContext, TrackingService::class.java).apply {
             action = TrackingService.STOP
             requireActivity().startService(this)
         }
+    }
+
+    private fun onSave() {
+        restoreToolbarHeader()
+        stopTrackingService()
         val exerciseEntry = trackingExerciseEntry.toExerciseEntry()
         exerciseEntryViewModel.insert(exerciseEntry)
+        findNavController().navigate(R.id.action_mapFragment_to_mainFragment)
     }
 
     private fun onExit() {
         restoreToolbarHeader()
-        Intent(requireActivity().applicationContext, TrackingService::class.java).apply {
-            action = TrackingService.STOP
-            requireActivity().startService(this)
-        }
+        stopTrackingService()
+        findNavController().navigate(R.id.action_mapFragment_to_mainFragment)
     }
+
 
     private fun setStatTexts() {
         val exerciseTypeTextView = view.findViewById<TextView>(R.id.map_exercise_type)
@@ -219,11 +246,5 @@ class MapFragment : Fragment(), MapFragmentInterface {
     override fun onMapReady(p0: GoogleMap) {
         googleMap = p0
         startTrackingService()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        googleMap.clear()
-        unsubscribeFromTrackingService()
     }
 }
