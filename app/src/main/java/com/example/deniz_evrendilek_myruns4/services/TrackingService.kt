@@ -67,7 +67,7 @@ class TrackingService : Service() {
             }
 
             STOP -> stop()
-            else -> throw IllegalStateException(
+            else -> println(
                 "Unsupported intent?.action ${intent?.action}, please pass " + "START or STOP"
             )
         }

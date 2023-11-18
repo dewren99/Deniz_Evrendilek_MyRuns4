@@ -38,9 +38,13 @@ class DisplayMapFragment : Fragment(), MapFragmentInterface {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_display_map, container, false)
         initDeleteButton()
-        initMap()
         initViewModels()
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initMap()
     }
 
     override fun initViewModels() {
